@@ -10,7 +10,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: 'Trebuchet MS', 'Lucida Sans', Arial, sans-serif;
             background: #000000;
@@ -19,20 +19,20 @@
             height: 100vh;
             position: relative;
         }
-
+        
         .background {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background:
+            background: 
                 linear-gradient(0deg, transparent 24%, rgba(255, 153, 51, 0.05) 25%, rgba(255, 153, 51, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 153, 51, 0.05) 75%, rgba(255, 153, 51, 0.05) 76%, transparent 77%, transparent),
                 linear-gradient(90deg, transparent 24%, rgba(255, 153, 51, 0.05) 25%, rgba(255, 153, 51, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 153, 51, 0.05) 75%, rgba(255, 153, 51, 0.05) 76%, transparent 77%, transparent);
             background-size: 50px 50px;
             opacity: 0.3;
         }
-
+        
         .scanline {
             position: absolute;
             top: 0;
@@ -45,12 +45,12 @@
             pointer-events: none;
             opacity: 0.2;
         }
-
+        
         @keyframes scanline {
             0% { background-position: 0 0; }
             100% { background-position: 0 100%; }
         }
-
+        
         .container {
             position: relative;
             z-index: 10;
@@ -60,7 +60,7 @@
             align-items: center;
             justify-content: center;
         }
-
+        
         .logo {
             font-size: 120px;
             font-weight: bold;
@@ -70,12 +70,12 @@
             font-family: 'Arial Black', sans-serif;
             animation: pulse 2s ease-in-out infinite;
         }
-
+        
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
         }
-
+        
         .title {
             font-size: 48px;
             font-weight: bold;
@@ -85,14 +85,14 @@
             color: #ff9933;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
         }
-
+        
         .subtitle {
             font-size: 20px;
             color: #cc7a29;
             margin-bottom: 60px;
             letter-spacing: 2px;
         }
-
+        
         .server-info {
             font-size: 16px;
             color: #ffaa55;
@@ -100,7 +100,7 @@
             text-align: center;
             line-height: 1.8;
         }
-
+        
         .status {
             font-size: 18px;
             margin-bottom: 20px;
@@ -109,7 +109,7 @@
             text-align: center;
             font-family: 'Courier New', monospace;
         }
-
+        
         .progress-container {
             width: 600px;
             max-width: 90%;
@@ -118,7 +118,7 @@
             padding: 4px;
             box-shadow: 0 0 10px rgba(255, 153, 51, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.8);
         }
-
+        
         .progress-bar {
             height: 30px;
             background: linear-gradient(90deg, #ff6600 0%, #ff9933 50%, #ffaa55 100%);
@@ -128,7 +128,7 @@
             position: relative;
             overflow: hidden;
         }
-
+        
         .progress-bar::after {
             content: '';
             position: absolute;
@@ -139,12 +139,12 @@
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
             animation: shimmer 2s infinite;
         }
-
+        
         @keyframes shimmer {
             0% { left: -100%; }
             100% { left: 100%; }
         }
-
+        
         .percentage {
             margin-top: 15px;
             font-size: 24px;
@@ -152,7 +152,7 @@
             color: #ff9933;
             text-shadow: 0 0 10px #ff6600;
         }
-
+        
         .download-info {
             margin-top: 15px;
             font-size: 14px;
@@ -160,7 +160,7 @@
             text-align: center;
             min-height: 20px;
         }
-
+        
         .info {
             position: absolute;
             bottom: 30px;
@@ -170,12 +170,12 @@
             color: #996633;
             letter-spacing: 1px;
         }
-
+        
         @keyframes flicker {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.95; }
         }
-
+        
         body {
             animation: flicker 0.15s infinite;
         }
@@ -184,91 +184,101 @@
 <body>
     <div class="background"></div>
     <div class="scanline"></div>
-
+    
     <div class="container">
         <div class="logo">λ</div>
         <div class="title">PROJECT: ALYX</div>
         <div class="subtitle">Half-Life 2 Roleplay</div>
-
+        
         <div class="server-info" id="serverInfo">Connecting to server...</div>
-
+        
         <div class="status" id="status">Initializing...</div>
-
+        
         <div class="progress-container">
             <div class="progress-bar" id="progressBar"></div>
         </div>
-
+        
         <div class="percentage" id="percentage">0%</div>
         <div class="download-info" id="downloadInfo"></div>
     </div>
-
+    
     <div class="info">
         Powered by Source Engine | © Valve Corporation
     </div>
-
+    
     <audio id="bgMusic" autoplay loop>
         <source src="music.mp3" type="audio/mpeg">
     </audio>
-
+    
     <script>
         // Start music
         const music = document.getElementById('bgMusic');
         music.volume = 0.3;
         music.play().catch(e => {
-            // Autoplay blocked, try again on first interaction
             document.addEventListener('click', () => music.play(), { once: true });
         });
-
+        
         const statusEl = document.getElementById('status');
         const progressBar = document.getElementById('progressBar');
         const percentageEl = document.getElementById('percentage');
         const serverInfoEl = document.getElementById('serverInfo');
         const downloadInfoEl = document.getElementById('downloadInfo');
-
+        
         let filesTotal = 0;
-        let filesDownloaded = 0;
-
-        // GMod calls these functions - DO NOT change function names
-
+        let filesNeeded = 0;
+        
+        // Update progress based on files downloaded
+        function updateProgress() {
+            if (filesTotal > 0 && filesNeeded >= 0) {
+                const filesDownloaded = filesTotal - filesNeeded;
+                const progress = (filesDownloaded / filesTotal) * 100;
+                
+                progressBar.style.width = progress + '%';
+                percentageEl.textContent = Math.floor(progress) + '%';
+                
+                if (filesNeeded > 0) {
+                    downloadInfoEl.textContent = `Downloading: ${filesDownloaded} / ${filesTotal} files`;
+                } else {
+                    downloadInfoEl.textContent = `Download complete! (${filesTotal} files)`;
+                }
+            }
+        }
+        
+        // GMod API Functions - These are called by the game
+        
         function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
+            console.log('GameDetails:', servername, mapname, gamemode);
             serverInfoEl.innerHTML = `
                 <strong style="font-size: 18px;">${servername}</strong><br>
                 Map: <strong>${mapname}</strong> | Gamemode: <strong>${gamemode}</strong> | Players: <strong>${maxplayers}</strong>
             `;
         }
-
+        
         function SetStatusChanged(status) {
+            console.log('Status:', status);
             statusEl.textContent = status;
         }
-
+        
         function SetFilesTotal(total) {
+            console.log('Files Total:', total);
             filesTotal = total;
             updateProgress();
         }
-
+        
         function SetFilesNeeded(needed) {
-            filesDownloaded = filesTotal - needed;
+            console.log('Files Needed:', needed);
+            filesNeeded = needed;
             updateProgress();
         }
-
+        
         function DownloadingFile(fileName) {
-            statusEl.textContent = 'Downloading: ' + fileName;
+            console.log('Downloading:', fileName);
+            // Show just the filename, not the full path
+            const shortName = fileName.split('/').pop().split('\\').pop();
+            statusEl.textContent = 'Downloading: ' + shortName;
         }
-
-        function SetStatusChanged(status) {
-            statusEl.textContent = status;
-        }
-
-        function updateProgress() {
-            if (filesTotal > 0) {
-                const progress = (filesDownloaded / filesTotal) * 100;
-                progressBar.style.width = progress + '%';
-                percentageEl.textContent = Math.floor(progress) + '%';
-                downloadInfoEl.textContent = `${filesDownloaded} / ${filesTotal} files downloaded`;
-            }
-        }
-
-        console.log('Loading screen initialized');
+        
+        console.log('Loading screen ready - waiting for GMod data...');
     </script>
 </body>
 </html>
